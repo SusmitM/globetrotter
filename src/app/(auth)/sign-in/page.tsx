@@ -1,9 +1,10 @@
 "use client";
+import { useEffect } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { z } from "zod";
 
 import { useToast } from "@/hooks/use-toast";
@@ -24,14 +25,52 @@ import { signInSchema } from "@/schemas/signInSchema";
 export default function SignIn() {
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Get invitation parameters if they exist
+  const inviteUsername = searchParams.get('username');
+  const invitePassword = searchParams.get('password');
+  const isInviteLink = inviteUsername && invitePassword;
 
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      identifier: "",
-      password: "",
+      identifier: isInviteLink ? inviteUsername : "",
+      password: isInviteLink ? invitePassword : "",
     },
   });
+
+  // Auto-login if coming from an invitation link
+  useEffect(() => {
+    if (isInviteLink) {
+      handleInviteLogin();
+    }
+  }, [inviteUsername, invitePassword]);
+
+  const handleInviteLogin = async () => {
+    if (!inviteUsername || !invitePassword) return;
+    
+    toast({
+      title: "Welcome!",
+      description: "You've been invited to Globetrotter. Signing you in...",
+    });
+    
+    const result = await signIn("credentials", {
+      redirect: false,
+      identifier: inviteUsername,
+      password: invitePassword,
+    });
+
+    if (result?.error) {
+      toast({
+        title: "Login Failed",
+        description: "Unable to sign in with the invitation link",
+        variant: "destructive",
+      });
+    } else if (result?.url) {
+      router.replace("/dashboard");
+    }
+  };
 
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
     const result = await signIn("credentials", {
@@ -61,69 +100,93 @@ export default function SignIn() {
               <MapPin className="h-6 w-6 text-blue-500" />
             </div>
           </div>
-          <h1 className="text-2xl font-bold">Welcome Back</h1>
+          <h1 className="text-2xl font-bold">
+            {isInviteLink ? "Welcome to Globetrotter!" : "Welcome Back"}
+          </h1>
           <p className="text-sm text-muted-foreground">
-            Sign in to access your anonymous messages
+            {isInviteLink 
+              ? "You've been invited to play. Signing you in..." 
+              : "Sign in to access your account"}
           </p>
         </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              name="identifier"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email or Username</FormLabel>
-                  <Input {...field} className="bg-background/50" />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              name="password"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <Input
-                    type="password"
-                    {...field}
-                    className="bg-background/50"
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button type="submit" className="w-full">
-              Sign In
+        {isInviteLink ? (
+          <div className="text-center p-4">
+            <div className="animate-pulse space-y-4">
+              <div className="h-4 bg-blue-500/20 rounded mx-auto w-3/4"></div>
+              <div className="h-4 bg-blue-500/20 rounded mx-auto w-1/2"></div>
+            </div>
+            <p className="mt-4 text-sm">
+              Signing you in automatically with the invitation link...
+            </p>
+            <Button 
+              onClick={handleInviteLogin} 
+              className="mt-4"
+            >
+              Sign in manually
             </Button>
-          </form>
-        </Form>
-        <div className="flex items-center">
-          <hr className="flex-grow border-t border-white" />
-          <p className="mx-2 text-sm text-white">or</p>
-          <hr className="flex-grow border-t border-white" />
-        </div>
-        <Button
-          onClick={() => {
-            signIn("google", { callbackUrl: "/" });
-          }}
-          className="h-14 w-full text-sm rounded-xl  flex gap-2 bg-white border-2 border-border text-[#565656] hover:text-white hover:border-black"
-        >
-          <Image src={GoogleIcon} alt="Google Icon" />
-          <p>Sign in with Google</p>
-        </Button>
-        <div className="text-center text-sm">
-          <p className="text-muted-foreground">
-            Don&apos;t have an account?{" "}
-            <Link href="/sign-up" className="text-blue-500 hover:text-blue-400">
-              Sign up
-            </Link>
-          </p>
-        </div>
+          </div>
+        ) : (
+          <>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  name="identifier"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email or Username</FormLabel>
+                      <Input {...field} className="bg-background/50" />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  name="password"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <Input
+                        type="password"
+                        {...field}
+                        className="bg-background/50"
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button type="submit" className="w-full">
+                  Sign In
+                </Button>
+              </form>
+            </Form>
+            <div className="flex items-center">
+              <hr className="flex-grow border-t border-white" />
+              <p className="mx-2 text-sm text-white">or</p>
+              <hr className="flex-grow border-t border-white" />
+            </div>
+            <Button
+              onClick={() => {
+                signIn("google", { callbackUrl: "/" });
+              }}
+              className="h-14 w-full text-sm rounded-xl flex gap-2 bg-white border-2 border-border text-[#565656] hover:text-white hover:border-black"
+            >
+              <Image src={GoogleIcon} alt="Google Icon" />
+              <p>Sign in with Google</p>
+            </Button>
+            <div className="text-center text-sm">
+              <p className="text-muted-foreground">
+                Don&apos;t have an account?{" "}
+                <Link href="/sign-up" className="text-blue-500 hover:text-blue-400">
+                  Sign up
+                </Link>
+              </p>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
