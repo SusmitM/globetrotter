@@ -15,7 +15,7 @@ export interface User extends Document{
 
 
 
-const UserScheam: Schema<User>=new Schema({
+const UserSchema: Schema<User>=new Schema({
     username:{
         type:String,
         required:[true,"Username is required"],
@@ -51,7 +51,7 @@ const UserScheam: Schema<User>=new Schema({
     }
 })
 
-const UserModel=(mongoose.models.User as mongoose.Model<User>) || mongoose.model<User>("User",UserScheam)
+const UserModel=(mongoose.models.User as mongoose.Model<User>) || mongoose.model<User>("User",UserSchema)
 
 
 export default UserModel
