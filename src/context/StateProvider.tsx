@@ -247,12 +247,14 @@ export function StateProvider({ children }: { children: ReactNode }) {
       setClueCount(1);
       setAnswerData(null);
       setSeenQuestions([]);
+      refreshUserDetails();
   };
   const handlePlayAgain = () => {
     handleFinishGame()
     setGameState("PLAYING");
     setShowAnswerModal(false);
     setGameData({ score: 0, correctAnswers: 0, incorrectAnswers: 0 });
+    fetchQuestionDetails();
   }
   
 
