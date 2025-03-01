@@ -1,4 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Globetrotter
+
+<p align="center">
+  <img src="public/map-pin-blue.svg" alt="Globetrotter Logo" width="100" />
+</p>
+
+## 📝 About
+
+Globetrotter is an interactive travel-themed guessing game that challenges players to identify famous destinations around the world based on cryptic clues. Players earn points by correctly guessing destinations, compete on leaderboards, and can challenge friends to beat their scores.
+
+## 🛠️ Tech Stack
+
+- **Frontend:**
+  - Next.js 15.2.0 (App Router)
+  - React 19.0.0
+  - TypeScript
+  - Tailwind CSS for styling
+  - Lucide React for icons
+  - Radix UI for accessible components
+
+- **Backend:**
+  - Next.js API Routes
+  - MongoDB for database
+  - Mongoose as ODM
+  - NextAuth.js for authentication
+  - bcrypt.js for password hashing
+
+- **Email:**
+  - Resend for email delivery
+  - React Email for email templates
+
+## ✨ Features
+
+- **User Authentication System**
+  - Email/password registration with verification
+  - Secure login with NextAuth.js
+  - Route protection with middleware
+  
+- **Game Mechanics**
+  - Cryptic clues about famous destinations
+  - Progressive hint system (each additional clue costs points)
+  - Points-based scoring system
+  - Fun facts about destinations after guessing
+  
+- **Social Features**
+  - Global leaderboard showing top players
+  - Challenge system to invite friends
+  - Shareable invitation links
+  
+- **User Experience**
+  - Clean, modern UI with responsive design
+  - Animated components and transitions
+  - Confetti celebration for correct answers
+  - Dark mode optimized interface
+
+## �� Folder Structure
 
 ## Getting Started
 
