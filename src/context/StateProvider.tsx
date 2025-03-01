@@ -38,6 +38,12 @@ type StateContextType = {
   clues: string[];
   clueCount: number;
   fetchClues: (destinationId: string) => Promise<void>;
+  checkAnswer: (destinationId: string, answer: string) => Promise<void>;
+  answerData: CurrentQuestionType | null;
+  showAnswerModal: boolean;
+  setShowAnswerModal: (showAnswerModal: boolean) => void;
+  handleFinishGame: () => void;
+  handlePlayAgain: () => void;
 };
 
 const StateContext = createContext<StateContextType | undefined>(undefined);
@@ -52,11 +58,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
     correctAnswers: number;
     incorrectAnswers: number;
   }>({ score: 0, correctAnswers: 0, incorrectAnswers: 0 });
-  const [answerData, setAnswerData] = useState<{
-    destinationId: string;
-    answer: string;
-    isCorrect: boolean;
-  } | null>(null);
+  const [answerData, setAnswerData] = useState<any | null>(null);
   const [timeLeft, setTimeLeft] = useState(120);
   const [seenQuestions, setSeenQuestions] = useState<string[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState<CurrentQuestionType>({
@@ -71,7 +73,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
     "This ancient Silk Road city is known for its mosques and mausoleums covered in blue tiles.",
   ]);
   const [clueCount, setClueCount] = useState(1);
-
+  const [showAnswerModal,setShowAnswerModal] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [userDetails, setUserDetails] = useState<UserScoreResponse | null>(
     null
@@ -156,21 +158,16 @@ export function StateProvider({ children }: { children: ReactNode }) {
     await fetchUserDetails();
   };
 
-  const checkAnswer = async ({
-    destinationId,
-    answer,
-  }: {
-    destinationId: string;
-    answer: string;
-  }) => {
+  const checkAnswer = async (destinationId: string, answer: string) => {
     setIsLoading(true);
+    console.log("Inside check answer")
     try {
       const response = await fetch("/api/game/check-answer", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ destinationId, answer }),
+        body: JSON.stringify({ destinationId, answer,score:gameData.score,clueCount }),
       });
 
       if (!response.ok) {
@@ -178,14 +175,15 @@ export function StateProvider({ children }: { children: ReactNode }) {
       }
 
       const result = await response.json();
-
+      
+      
       if (result.success) {
         setAnswerData(result.data);
 
         if (result.data.isCorrect) {
           setGameData({
             ...gameData,
-            score: gameData.score + 1,
+            score: gameData.score + result.data.pointsAwarded,
             correctAnswers: gameData.correctAnswers + 1,
           });
         } else {
@@ -242,6 +240,26 @@ export function StateProvider({ children }: { children: ReactNode }) {
     }
   };
 
+    const handleFinishGame = () => {
+      setShowAnswerModal(false);
+      setGameState("FINISED");
+     
+      setTimeLeft(120); 
+      setIsLoading(false);
+      setCurrentQuestion(null);
+      setClues([]);
+      setClueCount(1);
+      setAnswerData(null);
+      setSeenQuestions([]);
+  };
+  const handlePlayAgain = () => {
+    handleFinishGame()
+    setGameState("PLAYING");
+    setShowAnswerModal(false);
+    setGameData({ score: 0, correctAnswers: 0, incorrectAnswers: 0 });
+  }
+  
+
   const value = {
     gameData,
     setGameData,
@@ -258,6 +276,12 @@ export function StateProvider({ children }: { children: ReactNode }) {
     clues,
     clueCount,
     fetchClues,
+    checkAnswer,
+    answerData,
+    showAnswerModal,
+    setShowAnswerModal,
+    handleFinishGame,
+    handlePlayAgain
   };
   useEffect(() => {
     fetchUserDetails();

@@ -4,6 +4,7 @@ import GameIntro from "@/components/GameIntro";
 import GameResults from "@/components/GameResults";
 import { useStateContext } from "@/context/StateProvider";
 import { useState } from "react";
+import GamePlay from "@/components/GamePlay";
 
 
 export default function Game() {
@@ -18,7 +19,7 @@ export default function Game() {
       {gameState === 'NOT-STARTED' ? (
         <GameIntro/>
       ) : gameState === 'PLAYING' ? (
-        <ExampleUsage/>
+        <GamePlay/>
       ) : gameState === 'FINISED' ? (
         <GameResults/>
       ) : null}

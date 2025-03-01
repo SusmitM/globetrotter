@@ -3,20 +3,42 @@
 import { useStateContext } from "@/context/StateProvider";
 import { ArrowLeftIcon, CheckCircleIcon, XCircleIcon } from "lucide-react";
 import { Button } from "./ui/button";
+import { useState } from "react";
+import AnswerModal from "./AnswerModal";
 
 export default function ExampleUsage() {
-  const { gameData, timeLeft, currentQuestion, clues, clueCount, fetchClues } =
-    useStateContext();
+  const {
+    gameData,
+    timeLeft,
+    currentQuestion,
+    clues,
+    clueCount,
+    fetchClues,
+    checkAnswer,
+    showAnswerModal,
+    setShowAnswerModal
+  } = useStateContext();
+
+
   if (!currentQuestion) {
     return <div>No current question available.</div>;
   }
+
   const { destinationId, clue, totalClues, options } = currentQuestion;
-  console.log("🚀 ~ ExampleUsage ~ currentQuestion:", currentQuestion);
+
+  const handleDropdownClick = async (option: string) => {
+    console.log("Inside handle dropdown click")
+   const answerData = await checkAnswer(destinationId, option);
+    setShowAnswerModal(true)
+
+  };
 
   return (
-    <div className="border border-red-500 flex flex-col items-center justify-center p-12 w-[50%] gap-4">
+  <>
+ {showAnswerModal && <AnswerModal/>}
+    <div className=" flex flex-col items-center justify-center p-12 w-[50%] gap-4">
       <section className=" header-section flex justify-between items-center flex-start w-full">
-        <p className="flex items-center gap-2">
+        <p className="flex items-center gap-2 cursor-pointer">
           <ArrowLeftIcon /> Exit Game
         </p>
         <div className="flex items-center gap-2">
@@ -32,7 +54,10 @@ export default function ExampleUsage() {
         </p>
         <div className="flex flex-col gap-2 glass-card rounded-xl p-6">
           {clues.map((clue, index) => (
-            <p key={index} className="text-lg font-semibold">
+            <p
+              key={index}
+              className="text-lg font-semibold"
+            >
               Clue {index + 1}: {clue}
             </p>
           ))}
@@ -41,6 +66,7 @@ export default function ExampleUsage() {
         <div className="flex flex-col gap-2">
           {options.map((option, index) => (
             <p
+            onClick={() => {handleDropdownClick(option)}}
               className="glass-card font-bold rounded-xl p-2 hover:bg-gray-800 cursor-pointer"
               key={index}
             >
@@ -51,7 +77,7 @@ export default function ExampleUsage() {
         <Button
           disabled={clueCount === totalClues}
           className="glass-card rounded-xl p-2 hover:bg-blue-400 cursor-pointer"
-          onClick={() => fetchClues(destinationId)}
+          onClick={async() => await fetchClues(destinationId)}
         >
           Next Clue (-10 points)
         </Button>
@@ -68,5 +94,6 @@ export default function ExampleUsage() {
         </p>
       </section>
     </div>
+  </>
   );
 }

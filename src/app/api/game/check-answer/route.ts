@@ -7,19 +7,19 @@ import UserModel from "@/model/User";
 import { ApiResponse, CheckAnswerResponse } from "@/types/ApiResponse";
 
 export async function POST(request: NextRequest): Promise<Response> {
-  // const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
   
-  // if (!session || !session.user._id) {
-  //   return Response.json(
-  //     { success: false, message: "Unauthorized" },
-  //     { status: 401 }
-  //   );
-  // }
+  if (!session || !session.user._id) {
+    return Response.json(
+      { success: false, message: "Unauthorized" },
+      { status: 401 }
+    );
+  }
 
   await dbConnect();
 
   try {
-    const { destinationId, answer, score } = await request.json();
+    const { destinationId, answer,score, clueCount } = await request.json();
 
     if (!destinationId || !answer) {
       return Response.json(
@@ -41,15 +41,19 @@ export async function POST(request: NextRequest): Promise<Response> {
     // Check if the answer is correct
     const isCorrect = 
       destination.city.toLowerCase() === answer.toLowerCase()
+   let updatedScore
 
     // If correct, update user's high score if needed
-    // if (isCorrect && score) {
-    //   const user = await UserModel.findById(session.user._id);
-    //   if (user && score > user.highScore) {
-    //     user.highScore = score;
-    //     await user.save();
-    //   }
-    // }
+    if (isCorrect && score) {
+      updatedScore=score+50-((clueCount-1)*10)
+
+      const user = await UserModel.findById(session.user._id);
+
+      if (user && updatedScore > user.highScore) {
+        user.highScore = updatedScore;
+        await user.save();
+      }
+    }
 
     const funFacts = destination.fun_fact;
     const trivia = destination.trivia;
@@ -62,7 +66,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       },
       funFacts,
       trivia,
-      pointsAwarded: isCorrect ? 50 : 0
+      pointsAwarded: isCorrect ? 50-((clueCount-1)*10) : 0
     };
 
     return Response.json(
