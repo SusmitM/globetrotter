@@ -1,4 +1,4 @@
-import ExampleUsage from "@/components/ExampleUsage";
+import ExampleUsage from "@/components/GamePlay";
 
 export default function Settings() {
   return (
