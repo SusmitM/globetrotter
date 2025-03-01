@@ -44,6 +44,7 @@ type StateContextType = {
   setShowAnswerModal: (showAnswerModal: boolean) => void;
   handleFinishGame: () => void;
   handlePlayAgain: () => void;
+  fetchQuestionDetails: () => Promise<void>;
 };
 
 const StateContext = createContext<StateContextType | undefined>(undefined);
@@ -53,25 +54,20 @@ export function StateProvider({ children }: { children: ReactNode }) {
   const [gameState, setGameState] = useState<
     "NOT-STARTED" | "PLAYING" | "FINISED"
   >("PLAYING");
+
   const [gameData, setGameData] = useState<{
     score: number;
     correctAnswers: number;
     incorrectAnswers: number;
   }>({ score: 0, correctAnswers: 0, incorrectAnswers: 0 });
+
   const [answerData, setAnswerData] = useState<any | null>(null);
+
   const [timeLeft, setTimeLeft] = useState(120);
   const [seenQuestions, setSeenQuestions] = useState<string[]>([]);
-  const [currentQuestion, setCurrentQuestion] = useState<CurrentQuestionType>({
-    destinationId: "67c2ee94cdf1fb76b6fd3496",
-    clue: "This ancient Silk Road city is known for its mosques and mausoleums covered in blue tiles.",
-    clueNumber: 0,
-    totalClues: 2,
-    options: ["Ashgabat", "Beijing", "Naples", "Samarkand"],
-  });
+  const [currentQuestion, setCurrentQuestion] = useState<CurrentQuestionType | null>(null);
 
-  const [clues, setClues] = useState<string[]>([
-    "This ancient Silk Road city is known for its mosques and mausoleums covered in blue tiles.",
-  ]);
+  const [clues, setClues] = useState<string[]>([]);
   const [clueCount, setClueCount] = useState(1);
   const [showAnswerModal,setShowAnswerModal] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -134,7 +130,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
         setCurrentQuestion(result.data);
         setSeenQuestions([...seenQuestions, result.data.destinationId]);
         setClueCount(1);
-        setClues([...clues, result.data.clue]);
+        setClues([result.data.clue]);
       } else {
         throw new Error(result.message || "Failed to fetch question details");
       }
@@ -150,6 +146,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
       });
       setCurrentQuestion(null);
     } finally {
+      setShowAnswerModal(false);
       setIsLoading(false);
     }
   };
@@ -243,7 +240,6 @@ export function StateProvider({ children }: { children: ReactNode }) {
     const handleFinishGame = () => {
       setShowAnswerModal(false);
       setGameState("FINISED");
-     
       setTimeLeft(120); 
       setIsLoading(false);
       setCurrentQuestion(null);
@@ -281,10 +277,15 @@ export function StateProvider({ children }: { children: ReactNode }) {
     showAnswerModal,
     setShowAnswerModal,
     handleFinishGame,
-    handlePlayAgain
+    handlePlayAgain,
+    fetchQuestionDetails
   };
+
+
+
   useEffect(() => {
     fetchUserDetails();
+    fetchQuestionDetails()
   }, []);
 
   return (

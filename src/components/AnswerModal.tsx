@@ -15,9 +15,12 @@ type AnswerDataType = {
 };
 
 export default function AnswerModal() {
-  const { answerData,handleFinishGame } = useStateContext();
+  const { answerData,handleFinishGame,fetchQuestionDetails } = useStateContext();
   const typedAnswerData = answerData as unknown as AnswerDataType;
   
+  const handleNextQuestion = () => {
+    fetchQuestionDetails()
+  }
   
   if (!answerData) return null;
   
@@ -72,7 +75,7 @@ export default function AnswerModal() {
               <div className="flex flex-col gap-2 justify-center">
               <Button onClick={handleFinishGame} variant="outline">Finish Game</Button>
 
-                <Button>Next Question</Button>
+                <Button onClick={handleNextQuestion}>Next Question</Button>
           
               </div>
             </div>
