@@ -1,20 +1,130 @@
-"use client"
-import { useSession, signIn, signOut } from "next-auth/react"
+"use client";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { z } from "zod";
 
-export default function Component() {
-  const { data: session } = useSession()
-  if (session) {
-    return (
-      <>
-        Signed in as {session.user.email} <br />
-        <button onClick={() => signOut()}>Sign out</button>
-      </>
-    )
-  }
+import { useToast } from "@/hooks/use-toast";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { MapPin } from "lucide-react";
+import Image from "next/image";
+import GoogleIcon from "../../../../public/GoogleIcon.svg";
+import { signInSchema } from "@/schemas/signInSchema";
+
+export default function SignIn() {
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const form = useForm<z.infer<typeof signInSchema>>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: {
+      identifier: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (data: z.infer<typeof signInSchema>) => {
+    const result = await signIn("credentials", {
+      redirect: false,
+      identifier: data.identifier,
+      password: data.password,
+    });
+
+    if (result?.error) {
+      toast({
+        title: "Login Failed",
+        description: "Incorrect username or password",
+        variant: "destructive",
+      });
+    }
+    if (result?.url) {
+      router.replace("/dashboard");
+    }
+  };
+
   return (
-    <>
-      Not signed in <br />
-      <button className="bg-red-500 px-3 py-1 m-4 rounded" onClick={() => signIn()}>Sign in</button>
-    </>
-  )
+    <div className="min-h-screen hero-pattern flex items-center justify-center px-4">
+      <div className="glass-card w-full max-w-md p-8 rounded-xl space-y-8">
+        <div className="text-center space-y-2">
+          <div className="flex justify-center">
+            <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
+              <MapPin className="h-6 w-6 text-blue-500" />
+            </div>
+          </div>
+          <h1 className="text-2xl font-bold">Welcome Back</h1>
+          <p className="text-sm text-muted-foreground">
+            Sign in to access your anonymous messages
+          </p>
+        </div>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              name="identifier"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email or Username</FormLabel>
+                  <Input {...field} className="bg-background/50" />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="password"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <Input
+                    type="password"
+                    {...field}
+                    className="bg-background/50"
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" className="w-full">
+              Sign In
+            </Button>
+          </form>
+        </Form>
+        <div className="flex items-center">
+          <hr className="flex-grow border-t border-white" />
+          <p className="mx-2 text-sm text-white">or</p>
+          <hr className="flex-grow border-t border-white" />
+        </div>
+        <Button
+          onClick={() => {
+            signIn("google", { callbackUrl: "/" });
+          }}
+          className="h-14 w-full text-sm rounded-xl  flex gap-2 bg-white border-2 border-border text-[#565656] hover:text-white hover:border-black"
+        >
+          <Image src={GoogleIcon} alt="Google Icon" />
+          <p>Sign in with Google</p>
+        </Button>
+        <div className="text-center text-sm">
+          <p className="text-muted-foreground">
+            Don&apos;t have an account?{" "}
+            <Link href="/sign-up" className="text-blue-500 hover:text-blue-400">
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }
