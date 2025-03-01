@@ -10,7 +10,6 @@ import AnswerModal from "./AnswerModal";
 export default function ExampleUsage() {
   const {
     gameData,
-    timeLeft,
     currentQuestion,
     clues,
     clueCount,
@@ -49,7 +48,6 @@ export default function ExampleUsage() {
         </p>
         <div className="flex items-center gap-2">
           <p>Score: {gameData.score}</p>
-          <p>Time Left: {timeLeft}</p>
         </div>
       </section>
 

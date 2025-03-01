@@ -28,8 +28,6 @@ type StateContextType = {
     correctAnswers: number;
     incorrectAnswers: number;
   }) => void;
-  timeLeft: number;
-  setTimeLeft: (timeLeft: number) => void;
   isLoading: boolean;
   setIsLoading: (isLoading: boolean) => void;
   userDetails: UserScoreResponse | null;
@@ -66,7 +64,6 @@ export function StateProvider({ children }: { children: ReactNode }) {
 
   const [answerData, setAnswerData] = useState<any | null>(null);
 
-  const [timeLeft, setTimeLeft] = useState(120);
   const [seenQuestions, setSeenQuestions] = useState<string[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState<CurrentQuestionType | null>(null);
 
@@ -243,7 +240,6 @@ export function StateProvider({ children }: { children: ReactNode }) {
     const handleFinishGame = () => {
       setShowAnswerModal(false);
       setGameState("FINISED");
-      setTimeLeft(120); 
       setIsLoading(false);
       setCurrentQuestion(null);
       setClues([]);
@@ -273,8 +269,6 @@ export function StateProvider({ children }: { children: ReactNode }) {
   const value = {
     gameData,
     setGameData,
-    timeLeft,
-    setTimeLeft,
     isLoading,
     setIsLoading,
     userDetails,
