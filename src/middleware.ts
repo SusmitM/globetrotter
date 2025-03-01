@@ -3,7 +3,22 @@ import { getToken } from 'next-auth/jwt';
 export { default } from 'next-auth/middleware';
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/sign-in', '/sign-up', '/', '/verify/:path*'],
+  matcher: [
+    /*
+     * Match all routes under /dashboard, /play and any other protected routes
+     * that should require authentication
+     */
+    '/dashboard/:path*',
+    '/play/:path*',
+    
+    /*
+     * Match auth routes to redirect authenticated users to dashboard
+     */
+    '/sign-in',
+    '/sign-up',
+    '/',
+    '/verify/:path*',
+  ],
 };
 
 export async function middleware(request: NextRequest) {
@@ -11,7 +26,7 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
 
   // Redirect to dashboard if the user is already authenticated
-  // and trying to access sign-in, sign-up, or home page
+  // and trying to access sign-in, sign-up, verify or home page
   if (
     token &&
     (url.pathname.startsWith('/sign-in') ||
@@ -22,7 +37,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  if (!token && url.pathname.startsWith('/dashboard')) {
+  // Check if the user is trying to access a protected route without authentication
+  const protectedRoutes = ['/dashboard', '/play'];
+  const isProtectedRoute = protectedRoutes.some(route => 
+    url.pathname === route || url.pathname.startsWith(`${route}/`));
+
+  if (!token && isProtectedRoute) {
     return NextResponse.redirect(new URL('/sign-in', request.url));
   }
 
