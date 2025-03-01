@@ -17,7 +17,7 @@ interface LeaderboardResponse {
 
 export async function GET(request: NextRequest): Promise<Response> {
   const { searchParams } = new URL(request.url);
-  const limit = parseInt(searchParams.get('limit') || '5', 10); // Default to top 5
+  const limit = parseInt(searchParams.get('limit') || '10', 10); 
 
   await dbConnect();
 
