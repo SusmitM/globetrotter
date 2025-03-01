@@ -25,6 +25,8 @@ export default function Challenge() {
   const [loading, setLoading] = useState(false);
   const [inviteCreated, setInviteCreated] = useState(false);
   const [inviteLink, setInviteLink] = useState("");
+  const [inviteImageUrl, setInviteImageUrl] = useState("");
+  
   const { toast } = useToast();
   const { userDetails } = useStateContext();
   const debounced = useDebounceCallback(setDebouncedUsername, 500);
@@ -87,6 +89,11 @@ export default function Challenge() {
       if (response.data.success) {
         const generatedLink = `${window.location.origin}/sign-in?username=${data.username}&password=${response.data.password}`;
         setInviteLink(generatedLink);
+        
+        // Create dynamic image URL with timestamp to prevent caching
+        const imageUrl = `${window.location.origin}/api/generate-invite-image?username=${data.username}&t=${Date.now()}`;
+        setInviteImageUrl(imageUrl);
+        
         setInviteCreated(true);
         toast({
           title: "Success",
@@ -105,7 +112,10 @@ export default function Challenge() {
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(inviteLink);
+    const invitePath = `/play/invite?username=${form.getValues().username}&password=${encodeURIComponent(inviteLink.split('password=')[1])}`;
+    const fullInviteUrl = `${window.location.origin}${invitePath}`;
+    
+    navigator.clipboard.writeText(fullInviteUrl);
     toast({
       title: "Link copied",
       description: "Share it with your friend!",
@@ -114,41 +124,25 @@ export default function Challenge() {
 
   const shareOnWhatsApp = () => {
     try {
+      const username = form.getValues().username;
+      const invitePath = `/play/invite?username=${username}&password=${encodeURIComponent(inviteLink.split('password=')[1])}`;
+      const fullInviteUrl = `${window.location.origin}${invitePath}`;
       
-      const message = `Join me on Globetrotter! Click this link to start playing: ${inviteLink}`;
+      const message = `Join me on Globetrotter! Click this link to start playing: ${fullInviteUrl}`;
       const encodedMessage = encodeURIComponent(message);
       
-      // For mobile devices
-      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        // Use the native sharing API for mobile if available
-        if (navigator.share) {
-          navigator.share({
-            title: 'Globetrotter Challenge',
-            text: message,
-            url: inviteLink,
-          }).catch((err) => {
-            // Fall back to WhatsApp URL if sharing fails
-            window.location.href = `https://api.whatsapp.com/send?text=${encodedMessage}`;
-          });
-        } else {
-          // Direct to WhatsApp app on mobile
-          window.location.href = `https://api.whatsapp.com/send?text=${encodedMessage}`;
-        }
-      } else {
-        // For desktop - use WhatsApp Web
-        const whatsappUrl = `https://web.whatsapp.com/send?text=${encodedMessage}`;
-        window.open(whatsappUrl, '_blank');
-      }
+      const whatsappUrl = `https://web.whatsapp.com/send?text=${encodedMessage}`;
+      window.open(whatsappUrl, '_blank');
       
       toast({
         title: "Opening WhatsApp",
-        description: "WhatsApp should open shortly. If not, try copying the link directly.",
+        description: "WhatsApp should open shortly with your invitation.",
       });
     } catch (error) {
-      console.error("Error sharing to WhatsApp:", error);
+      console.error("Error sharing:", error);
       toast({
         title: "Sharing Failed",
-        description: "Unable to open WhatsApp. You can manually copy the link instead.",
+        description: "Unable to share. You can manually copy the link instead.",
         variant: "destructive"
       });
     }
@@ -225,6 +219,17 @@ export default function Challenge() {
             </Form>
           ) : (
             <div className="space-y-4">
+              <div className="overflow-hidden rounded-lg shadow-lg mb-4">
+                <img 
+                  src={inviteImageUrl} 
+                  alt="Globetrotter Invitation" 
+                  className="w-full h-auto"
+                  onError={(e) => {
+                    e.currentTarget.src = "https://placehold.co/600x300/1e3a8a/ffffff?text=Globetrotter+Challenge";
+                  }}
+                />
+              </div>
+              
               <div className="relative">
                 <Input 
                   value={inviteLink} 
