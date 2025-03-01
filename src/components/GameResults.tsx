@@ -1,12 +1,16 @@
-import { useEffect, useState } from "react";
+'use client'
 import { useStateContext } from "@/context/StateProvider";
 import { Button } from "./ui/button";
 import { TrophyIcon, CheckCircleIcon, XCircleIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function GameResults() {
-    const { gameData, userDetails, handlePlayAgain, refreshUserDetails } = useStateContext();
+    const { gameData, userDetails, handlePlayAgain, handleExitGame } = useStateContext();
 
+    const handleBackToDashboard = () => {
+        handleExitGame();
+    }
 
    
     const handleInviteFriend = () => {
@@ -39,7 +43,7 @@ export default function GameResults() {
                 <Button onClick={handlePlayAgain} variant="outline">Play Again</Button>
                 <Link href="/dashboard/challenge"> <Button  variant="outline">Challenge a Friend</Button></Link>
                 
-                <Link href="/dashboard"> <Button variant="outline">Back to Dashboard</Button></Link>
+        <Button onClick={handleBackToDashboard} variant="outline">Back to Dashboard</Button>
             </div>
         </div>
     );

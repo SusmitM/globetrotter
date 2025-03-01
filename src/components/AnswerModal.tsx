@@ -19,6 +19,7 @@ export default function AnswerModal() {
   const typedAnswerData = answerData as unknown as AnswerDataType;
   
   const handleNextQuestion = () => {
+    
     fetchQuestionDetails()
   }
   

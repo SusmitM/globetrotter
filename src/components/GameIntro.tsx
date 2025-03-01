@@ -4,7 +4,7 @@ import { GameRules } from "./GameRules";
 import { useStateContext } from "@/context/StateProvider";
 
 export default function GameIntro() {
-  const {setGameState}=useStateContext();
+  const {setGameState,fetchQuestionDetails}=useStateContext();
   return (
    <>
     <div className="glass-card rounded-xl p-6 flex flex-col gap-2 mb-6">
@@ -23,7 +23,7 @@ export default function GameIntro() {
 
         </div>
       </div>
-      <Button onClick={()=>setGameState('PLAYING')} variant="outline" className="bg-blue-500 text-white hover:bg-blue-600">Start Game</Button>
+      <Button onClick={()=>{ fetchQuestionDetails();setGameState('PLAYING')}} variant="outline" className="bg-blue-500 text-white hover:bg-blue-600">Start Game</Button>
     </div>
 
     <GameRules/>

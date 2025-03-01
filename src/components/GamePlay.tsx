@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { useState } from "react";
 import AnswerModal from "./AnswerModal";
 
+
 export default function ExampleUsage() {
   const {
     gameData,
@@ -16,7 +17,8 @@ export default function ExampleUsage() {
     fetchClues,
     checkAnswer,
     showAnswerModal,
-    setShowAnswerModal
+    setShowAnswerModal,
+    handleExitGame
   } = useStateContext();
 
 
@@ -27,18 +29,22 @@ export default function ExampleUsage() {
   const { destinationId, clue, totalClues, options } = currentQuestion;
 
   const handleDropdownClick = async (option: string) => {
-    console.log("Inside handle dropdown click")
    const answerData = await checkAnswer(destinationId, option);
     setShowAnswerModal(true)
 
   };
+
+   const handleBackToDashboard=()=>{
+      handleExitGame()
+    }
+  
 
   return (
   <>
  {showAnswerModal && <AnswerModal/>}
     <div className=" flex flex-col items-center justify-center p-12 w-[50%] gap-4">
       <section className=" header-section flex justify-between items-center flex-start w-full">
-        <p className="flex items-center gap-2 cursor-pointer">
+        <p onClick={() => {handleBackToDashboard()}} className="flex items-center gap-2 cursor-pointer">
           <ArrowLeftIcon /> Exit Game
         </p>
         <div className="flex items-center gap-2">

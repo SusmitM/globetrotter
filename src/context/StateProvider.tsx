@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { UserScoreResponse } from "@/types/ApiResponse";
+import { useRouter } from "next/navigation";
 
 type CurrentQuestionType = {
   destinationId: string;
@@ -45,15 +46,17 @@ type StateContextType = {
   handleFinishGame: () => void;
   handlePlayAgain: () => void;
   fetchQuestionDetails: () => Promise<void>;
+  handleExitGame: () => void;
 };
 
 const StateContext = createContext<StateContextType | undefined>(undefined);
 
 export function StateProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
+  const router = useRouter();
   const [gameState, setGameState] = useState<
     "NOT-STARTED" | "PLAYING" | "FINISED"
-  >("PLAYING");
+  >("NOT-STARTED");
 
   const [gameData, setGameData] = useState<{
     score: number;
@@ -256,7 +259,16 @@ export function StateProvider({ children }: { children: ReactNode }) {
     setGameData({ score: 0, correctAnswers: 0, incorrectAnswers: 0 });
     fetchQuestionDetails();
   }
-  
+  const handleExitGame = () => {
+    setGameState("NOT-STARTED");
+    setGameData({ score: 0, correctAnswers: 0, incorrectAnswers: 0 });
+    setCurrentQuestion(null);
+    setClues([]);
+    setClueCount(1);
+    setAnswerData(null);
+    setSeenQuestions([]);
+    router.push("/dashboard");
+  };
 
   const value = {
     gameData,
@@ -280,14 +292,14 @@ export function StateProvider({ children }: { children: ReactNode }) {
     setShowAnswerModal,
     handleFinishGame,
     handlePlayAgain,
-    fetchQuestionDetails
+    fetchQuestionDetails,
+    handleExitGame
   };
 
 
 
   useEffect(() => {
     fetchUserDetails();
-    fetchQuestionDetails()
   }, []);
 
   return (
