@@ -8,38 +8,34 @@ const UsernameQuerySchema = z.object({
   username: usernameValidation,
 });
 
-export const GET = async (request: NextRequest, respose: NextResponse) => {
-  await dbConnect();
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const queryParam = {
-      username: searchParams.get("username"),
-    };
-    const result=UsernameQuerySchema.safeParse(queryParam);
+    const username = searchParams.get('username');
 
-
-    if(!result.success){
-        const usernameErrors=result.error.format().username?._errors || []
-
-        return Response.json({success:false,message:"Invalid query parameters"},{status:400})
+    if (!username) {
+      return NextResponse.json(
+        { success: false, message: 'Username is required' },
+        { status: 400 }
+      );
     }
-    const {username}=result.data;
 
-    const existingVerifiedUser=await UserModel.findOne({username,isVerified:true});
-    if(existingVerifiedUser){
+    await dbConnect();
 
-        return Response.json({success:false,message:"Username already taken "},{status:400})
-    }
-    return Response.json({success:true,message:"Username is available "},{status:200})
-
+    // Check if username exists
+    const existingUser = await UserModel.findOne({ username });
+    
+    return NextResponse.json({
+      success: true,
+      data: {
+        isAvailable: !existingUser
+      }
+    });
   } catch (error) {
-    console.error("Error validating user", error);
-    return Response.json(
-      {
-        success: false,
-        message: "Error validating username",
-      },
+    console.error('Error checking username:', error);
+    return NextResponse.json(
+      { success: false, message: 'Failed to check username' },
       { status: 500 }
     );
   }
-};
+}
