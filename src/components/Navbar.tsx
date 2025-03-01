@@ -3,7 +3,7 @@ import { User } from "next-auth";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { MessageSquare } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 const Navbar = () => {
   const { data: session } = useSession();
@@ -14,8 +14,8 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <MessageSquare className="h-6 w-6 text-blue-500" />
-            <span className="font-semibold text-lg hidden md:block">Anonymous Messages</span>
+            <MapPin className="h-5 w-5 text-blue-500" />
+            <span className="font-semibold text-xl hidden md:block">Globetrotter</span>
           </Link>
 
           <div className="flex items-center gap-4">
