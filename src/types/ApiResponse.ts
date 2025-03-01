@@ -33,3 +33,26 @@ export interface UpdateScoreResponse {
     newScore: number;
     highScore: number;
 }
+
+export interface UserScoreResponse {
+    userId: string;
+    username: string;
+    highScore: number;
+    invitedBy?: {
+        userId: string;
+        username: string;
+        highScore: number;
+    };
+}
+
+export interface LeaderboardEntry {
+    userId: string;
+    username: string;
+    highScore: number;
+    rank: number;
+}
+
+export interface LeaderboardResponse {
+    leaderboard: LeaderboardEntry[];
+    currentUserRank?: LeaderboardEntry;
+}
