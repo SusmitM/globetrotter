@@ -73,6 +73,35 @@ function SignInContent() {
     }
   };
 
+  const handleGuestLogin = async () => {
+    toast({
+      title: "Guest Login",
+      description: "Signing you in as guest...",
+    });
+    
+    try {
+      
+      // Use credentials to sign in
+      const result = await signIn("credentials", {
+        redirect: false,
+        identifier: process.env.NEXT_PUBLIC_GUEST_USER,
+        password: process.env.NEXT_PUBLIC_GUEST_PASSWORD,
+      });
+
+      if (result?.error) {
+        throw new Error(result.error);
+      } else if (result?.url) {
+        router.replace("/dashboard");
+      }
+    } catch (error) {
+      toast({
+        title: "Guest Login Failed",
+        description: error instanceof Error ? error.message : "Unable to sign in as guest",
+        variant: "destructive",
+      });
+    }
+  };
+
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
     const result = await signIn("credentials", {
       redirect: false,
@@ -182,12 +211,7 @@ function SignInContent() {
             <Button
               variant="ghost"
               className="w-full text-sm border border-dashed border-blue-500/50 hover:bg-blue-500/10"
-              onClick={() => {
-                toast({
-                  title: "Guest Login",
-                  description: "Guest login will be implemented soon!",
-                });
-              }}
+              onClick={handleGuestLogin}
             >
               Continue as Guest
             </Button>
