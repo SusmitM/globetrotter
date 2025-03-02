@@ -1,16 +1,16 @@
 'use client'
-import { ArrowLeft, Trophy } from "lucide-react";
+import { ArrowLeft, TrophyIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 
-interface LeaderboardEntry {
+type LeaderboardEntry = {
+  rank: number;
   userId: string;
   username: string;
   highScore: number;
-  rank: number;
-}
+};
 
 export default function Leaderboard() {
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
@@ -48,35 +48,37 @@ export default function Leaderboard() {
   }, [session]);
 
   return (
-    <div className="min-h-screen hero-pattern pt-20 px-4 flex flex-col items-center">
-      <div className="w-full max-w-3xl mx-auto">
-        <div className="flex justify-between items-center mb-6 w-full">
-          <Link href="/dashboard" className="flex items-center gap-2 text-sm hover:underline">
-            <ArrowLeft className="h-4 w-4" /> Back to Dashboard
-          </Link>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Trophy className="h-6 w-6 text-blue-500" /> Leaderboard
-          </h1>
-        </div>
-
-        <div className="glass-card rounded-xl p-6 w-full">
-          <h2 className="text-xl font-bold text-center mb-6">Top Globetrotters</h2>
+    <div className="min-h-screen hero-pattern pt-16 md:pt-20 px-4">
+      <div className="container mx-auto max-w-3xl">
+        <div className="glass-card p-4 md:p-6 rounded-lg shadow-xl">
+          <div className="flex flex-col md:flex-row items-center justify-between mb-6">
+            <Link href="/dashboard">
+              <div className="flex items-center gap-2 text-sm hover:underline cursor-pointer mb-4 md:mb-0">
+                <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+              </div>
+            </Link>
+            <h1 className="text-xl md:text-2xl font-bold text-white text-center">
+              Global Leaderboard
+            </h1>
+          </div>
 
           {isLoading ? (
-            <div className="text-center py-10">Loading leaderboard...</div>
+            <div className="text-center py-6">
+              <p className="text-gray-400">Loading leaderboard data...</p>
+            </div>
           ) : (
             <div className="space-y-2">
               {leaderboardData.map((entry) => (
                 <div 
                   key={entry.userId}
-                  className={`flex justify-between items-center p-4 rounded-lg 
+                  className={`flex justify-between items-center p-3 md:p-4 rounded-lg 
                     ${entry.rank <= 3 ? 'bg-black/50' : 'bg-black/30'}
                     ${session?.user?._id === entry.userId ? 'border border-blue-500/50' : ''}`}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="w-8 text-center flex justify-center items-center">
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <span className="w-6 md:w-8 text-center flex justify-center items-center">
                       {entry.rank <= 3 ? (
-                        <span className="text-xl">
+                        <span className="text-lg md:text-xl">
                           {entry.rank === 1 && <span className="text-yellow-400">🥇</span>}
                           {entry.rank === 2 && <span className="text-gray-400">🥈</span>}
                           {entry.rank === 3 && <span className="text-amber-700">🥉</span>}
@@ -85,9 +87,9 @@ export default function Leaderboard() {
                         <span className="text-gray-400">{entry.rank}</span>
                       )}
                     </span>
-                    <span className="font-medium">{entry.username}</span>
+                    <span className="text-sm md:text-base font-medium">{entry.username}</span>
                   </div>
-                  <span className="font-bold">{entry.highScore} pts</span>
+                  <span className="text-sm md:text-base font-bold">{entry.highScore} pts</span>
                 </div>
               ))}
 

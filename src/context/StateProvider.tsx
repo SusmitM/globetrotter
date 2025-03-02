@@ -292,10 +292,8 @@ export function StateProvider({ children }: { children: ReactNode }) {
     handleFinishGame,
     handlePlayAgain,
     fetchQuestionDetails,
-    handleExitGame
+    handleExitGame,
   };
-
-
 
   useEffect(() => {
     fetchUserDetails();

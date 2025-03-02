@@ -52,28 +52,26 @@ export default function Dashboard() {
     
   ]
 
-
-
   return (
-    <div className="min-h-screen hero-pattern px-4 flex flex-col gap-4 justify-center items-center">
-
-      <div className="flex flex-col items-center gap-2 mb-8">
-        <MapPin className="h-12 w-12 text-blue-500 inline-block"/>
-        <h1 className="text-4xl text-blue-500 font-bold">Globetrotter</h1>
-        <p className="text-lg">Hey, {userDetails?.username}! Ready for a challenge?</p>
-        {
-          userDetails?.invitedBy && (
-            <p className="text-md text-muted-foreground">Can you beat your friend {userDetails?.invitedBy?.username}'s score? <span className="text-blue-500 font-bold">{userDetails?.invitedBy?.highScore}</span></p>
-          )
-        }
-      </div>
-
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-        {dashboardItems.map((item: { title: string; description: string; icon: React.ReactNode; redirection: React.ReactNode; }) => (
-          <DashboardTile key={item.title} item={item}/>
-           
-        ))}
+    <div className="min-h-screen hero-pattern pt-16 md:pt-20 px-4">
+      <div className="container mx-auto">
+        <div className="flex flex-col gap-6">
+          <h1 className="text-2xl md:text-3xl font-bold text-white">
+            Welcome, {userDetails ? userDetails.username : "Player"}!
+          </h1>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {dashboardItems.map((item, index) => (
+              <DashboardTile
+                key={index}
+                title={item.title}
+                description={item.description}
+                icon={item.icon}
+                redirection={item.redirection}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

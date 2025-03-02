@@ -41,7 +41,7 @@ export default function ExampleUsage() {
   return (
   <>
  {showAnswerModal && <AnswerModal/>}
-    <div className=" flex flex-col items-center justify-center p-12 w-[50%] gap-4">
+    <div className="flex flex-col items-center justify-center p-4 md:p-8 lg:p-12 w-full md:w-[80%] lg:w-[60%] xl:w-[50%] gap-4">
       <section className=" header-section flex justify-between items-center flex-start w-full">
         <p onClick={() => {handleBackToDashboard()}} className="flex items-center gap-2 cursor-pointer">
           <ArrowLeftIcon /> Exit Game
