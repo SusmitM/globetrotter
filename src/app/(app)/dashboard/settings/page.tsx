@@ -17,7 +17,7 @@ export default function Settings() {
   }
   
   return (
-    <div className="min-h-screen hero-pattern pt-16 md:pt-20 px-4 flex justify-center">
+    <div className="min-h-screen hero-pattern pt-16 md:pt-20 px-4 flex justify-center items-center">
       <div className="glass-card p-4 md:p-8 rounded-lg shadow-xl w-full max-w-md">
         <div className="flex flex-col md:flex-row items-center justify-between mb-6">
           <Link href="/dashboard">
@@ -32,34 +32,36 @@ export default function Settings() {
           <div className="space-y-2">
             <h2 className="text-lg font-medium text-white">Account Information</h2>
             <div className="glass-card p-3 md:p-4 rounded-lg">
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <div className="flex flex-col">
                   <span className="text-sm text-muted-foreground">Username</span>
                   <span className="font-medium">{userDetails.username}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm text-muted-foreground">Email</span>
-                  <span className="font-medium">{userDetails.email}</span>
+                  <span className="text-sm text-muted-foreground">High Score</span>
+                  <span className="font-medium">{userDetails.highScore}</span>
                 </div>
               </div>
             </div>
           </div>
           
-          <div className="space-y-2">
-            <h2 className="text-lg font-medium text-white">Game Statistics</h2>
-            <div className="glass-card p-3 md:p-4 rounded-lg">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col">
-                  <span className="text-sm text-muted-foreground">High Score</span>
-                  <span className="font-medium">{userDetails.highScore}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm text-muted-foreground">Total Games</span>
-                  <span className="font-medium">{userDetails.gamesPlayed}</span>
+          {userDetails.invitedBy && (
+            <div className="space-y-2">
+              <h2 className="text-lg font-medium text-white">Invited By</h2>
+              <div className="glass-card p-3 md:p-4 rounded-lg">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col">
+                    <span className="text-sm text-muted-foreground">Username</span>
+                    <span className="font-medium">{userDetails.invitedBy.username}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm text-muted-foreground">High Score</span>
+                    <span className="font-medium">{userDetails.invitedBy.highScore}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
