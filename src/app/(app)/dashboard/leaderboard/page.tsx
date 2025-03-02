@@ -12,10 +12,6 @@ interface LeaderboardEntry {
   rank: number;
 }
 
-interface LeaderboardData {
-  leaderboard: LeaderboardEntry[];
-}
-
 export default function Leaderboard() {
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,13 +46,6 @@ export default function Leaderboard() {
 
     fetchLeaderboard();
   }, [session]);
-
-  const getMedalIcon = (rank: number) => {
-    if (rank === 1) return "🥇";
-    if (rank === 2) return "🥈";
-    if (rank === 3) return "🥉";
-    return rank;
-  };
 
   return (
     <div className="min-h-screen hero-pattern pt-20 px-4 flex flex-col items-center">
