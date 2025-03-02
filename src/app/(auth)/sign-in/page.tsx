@@ -178,6 +178,20 @@ function SignInContent() {
               <Image src={GoogleIcon} alt="Google Icon" />
               <p>Sign in with Google</p>
             </Button>
+            
+            <Button
+              variant="ghost"
+              className="w-full text-sm border border-dashed border-blue-500/50 hover:bg-blue-500/10"
+              onClick={() => {
+                toast({
+                  title: "Guest Login",
+                  description: "Guest login will be implemented soon!",
+                });
+              }}
+            >
+              Continue as Guest
+            </Button>
+            
             <div className="text-center text-sm">
               <p className="text-muted-foreground">
                 Don&apos;t have an account?{" "}
