@@ -6,14 +6,14 @@ import DestinationModel from "@/model/Destination";
 import { ApiResponse, NextClueResponse } from "@/types/ApiResponse";
 
 export async function GET(request: NextRequest): Promise<Response> {
-//   const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
   
-//   if (!session || !session.user._id) {
-//     return Response.json(
-//       { success: false, message: "Unauthorized" },
-//       { status: 401 }
-//     );
-//   }
+  if (!session || !session.user._id) {
+    return Response.json(
+      { success: false, message: "Unauthorized" },
+      { status: 401 }
+    );
+  }
 
   await dbConnect();
 

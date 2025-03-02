@@ -6,7 +6,7 @@ import DestinationModel from "@/model/Destination";
 import { ApiResponse, QuestionResponse } from "@/types/ApiResponse";
 
 export async function POST(request: NextRequest) {
-  console.log("Question API called");
+
 
   await dbConnect();
 

@@ -84,7 +84,7 @@ export default function AnswerModal() {
             </div>
             
             <p className="text-lg mb-4"> 
-              The correct answer is <span className="font-bold">{typedAnswerData.correctAnswer.city}, {typedAnswerData.correctAnswer.country}</span>
+              The correct answer is <span className="font-bold text-blue-500">{typedAnswerData.correctAnswer.city}, {typedAnswerData.correctAnswer.country}</span>
             </p>
             
             <div className="space-y-4 ">

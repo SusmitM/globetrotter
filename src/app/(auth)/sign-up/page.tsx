@@ -46,15 +46,18 @@ export default function SignUp() {
           const response = await axios.get(
             `/api/check-username-unique?username=${username}`
           );
-          setUsernameMessage(response.data.message);
-          setUsernameState(response.data.success)
+          
+          if (response.data.data?.isAvailable) {
+            setUsernameMessage("Username is available!");
+            setUsernameState(true);
+          } else {
+            setUsernameMessage("Username is already taken");
+            setUsernameState(false);
+          }
         } catch (error) {
           const axiosError = error as AxiosError<ApiResponse>;
-          setUsernameMessage(
-            axiosError?.response?.data.message ?? "Error checking username"
-          );
-          setUsernameState(false)
-          
+          setUsernameMessage("Error checking username");
+          setUsernameState(false);
         } finally {
           setLoading(false);
         }
@@ -115,12 +118,21 @@ export default function SignUp() {
                       debounced(e.target.value);
                     }}
                   />
-                  {loading && <Loader2 className="animate-spin" />}
-                  {!loading && usernameMessage && (
-                    <p className={`text-sm ${usernameState ? "text-green-500" : "text-red-500"}`}>
-                      {usernameMessage}
-                    </p>
-                  )}
+                  <div className="mt-1">
+                    {loading && (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+                        <p className="text-sm text-muted-foreground">
+                          Checking username...
+                        </p>
+                      </div>
+                    )}
+                    {!loading && usernameMessage && (
+                      <p className={`text-sm ${usernameState ? "text-green-500" : "text-red-500"}`}>
+                        {usernameMessage}
+                      </p>
+                    )}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

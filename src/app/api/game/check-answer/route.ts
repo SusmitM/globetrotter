@@ -40,18 +40,23 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     // Check if the answer is correct
     const isCorrect = 
-      destination.city.toLowerCase() === answer.toLowerCase()
-   let updatedScore
+      destination.city.toLowerCase() === answer.toLowerCase();
+    let updatedScore = score; // Initialize updatedScore with the current score
 
-    // If correct, update user's high score if needed
-    if (isCorrect && score) {
-      updatedScore=score+50-((clueCount-1)*10)
+    console.log("user", isCorrect);
+    console.log('updatedScore', updatedScore);
+
+    // If correct, calculate the updated score
+    if (isCorrect) {
+      updatedScore = score + 50 - ((clueCount - 1) * 10);
 
       const user = await UserModel.findById(session.user._id);
 
+      // Update user's high score if the new score is higher
       if (user && updatedScore > user.highScore) {
         user.highScore = updatedScore;
-        await user.save();
+        const response = await user.save();
+        console.log("🚀 ~ POST ~ response:", response);
       }
     }
 

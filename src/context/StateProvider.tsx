@@ -164,7 +164,6 @@ export function StateProvider({ children }: { children: ReactNode }) {
 
   const checkAnswer = async (destinationId: string, answer: string) => {
     setIsLoading(true);
-    console.log("Inside check answer")
     try {
       const response = await fetch("/api/game/check-answer", {
         method: "POST",
