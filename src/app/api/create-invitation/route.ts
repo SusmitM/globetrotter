@@ -23,15 +23,14 @@ export async function POST(request: NextRequest): Promise<Response> {
     const password = crypto.randomBytes(4).toString('hex');
     const hashedPassword = await bcrypt.hash(password, 10);
     
-    // Generate an invite code (this will be used to verify the invitation)
-    const inviteCode = crypto.randomBytes(16).toString('hex');
+  
 
     // Create a new user account
     const newUser = new UserModel({
       username,
-      email: `${username}-invite@temporary.com`, // Temporary email
+      email: `${username}-invite@temporary.com`, 
       password: hashedPassword,
-      isVerified: true, // Auto-verify invited users
+      isVerified: true, 
       invitedBy: inviterId,
       highScore: 0
     });
@@ -41,7 +40,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     return Response.json({
       success: true,
       message: "Invitation created successfully",
-      password // Return the plain text password for inclusion in the URL
+      password 
     }, { status: 201 });
     
   } catch (error) {
