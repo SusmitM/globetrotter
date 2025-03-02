@@ -10,6 +10,7 @@ import React, {
 import { useToast } from "@/hooks/use-toast";
 import { UserScoreResponse } from "@/types/ApiResponse";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 type CurrentQuestionType = {
   destinationId: string;
@@ -52,6 +53,7 @@ const StateContext = createContext<StateContextType | undefined>(undefined);
 export function StateProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [gameState, setGameState] = useState<
     "NOT-STARTED" | "PLAYING" | "FINISED"
   >("NOT-STARTED");
@@ -296,8 +298,13 @@ export function StateProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    fetchUserDetails();
-  }, []);
+    if (status === "authenticated" && session) {
+      fetchUserDetails();
+    } else if (status === "unauthenticated") {
+      setUserDetails(null);
+      setIsLoadingUserDetails(false);
+    }
+  }, [status, session]);
 
   return (
     <StateContext.Provider value={value}>{children}</StateContext.Provider>
