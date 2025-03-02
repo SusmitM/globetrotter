@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,7 +22,8 @@ import Image from "next/image";
 import GoogleIcon from "../../../../public/GoogleIcon.svg";
 import { signInSchema } from "@/schemas/signInSchema";
 
-export default function SignIn() {
+// Create a client component that uses useSearchParams
+function SignInContent() {
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -189,5 +190,18 @@ export default function SignIn() {
         )}
       </div>
     </div>
+  );
+}
+
+// Main component with Suspense boundary
+export default function SignIn() {
+  return (
+    <Suspense fallback={<div className="min-h-screen hero-pattern flex items-center justify-center">
+      <div className="glass-card p-6 rounded-lg shadow-xl w-full max-w-md">
+        <p className="text-center text-white">Loading...</p>
+      </div>
+    </div>}>
+      <SignInContent />
+    </Suspense>
   );
 }
