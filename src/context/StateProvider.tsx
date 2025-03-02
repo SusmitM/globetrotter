@@ -77,12 +77,17 @@ export function StateProvider({ children }: { children: ReactNode }) {
   const [isLoadingUserDetails, setIsLoadingUserDetails] =
     useState<boolean>(true);
 
-  const fetchUserDetails = async () => {
+  const fetchUserDetails = async (retryCount = 0) => {
     setIsLoadingUserDetails(true);
     try {
       const response = await fetch("/api/game/user-details");
 
       if (!response.ok) {
+        if (response.status === 401 && retryCount < 3) {
+          console.log(`Session not ready yet, retrying... (${retryCount + 1}/3)`);
+          setTimeout(() => fetchUserDetails(retryCount + 1), 1000);
+          return;
+        }
         throw new Error(`Failed to fetch user details: ${response.status}`);
       }
 

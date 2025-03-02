@@ -114,12 +114,7 @@ export default function Challenge() {
   };
 
   const handleCopyLink = () => {
-    const invitePath = `/play/invite?username=${
-      form.getValues().username
-    }&password=${encodeURIComponent(inviteLink.split("password=")[1])}`;
-    const fullInviteUrl = `${window.location.origin}${invitePath}`;
-
-    navigator.clipboard.writeText(fullInviteUrl);
+    navigator.clipboard.writeText(inviteLink);
     toast({
       title: "Link copied",
       description: "Share it with your friend!",
@@ -128,13 +123,7 @@ export default function Challenge() {
 
   const shareOnWhatsApp = () => {
     try {
-      const username = form.getValues().username;
-      const invitePath = `/play/invite?username=${username}&password=${encodeURIComponent(
-        inviteLink.split("password=")[1]
-      )}`;
-      const fullInviteUrl = `${window.location.origin}${invitePath}`;
-
-      const message = `Join me on Globetrotter! Click this link to start playing: ${fullInviteUrl}`;
+      const message = `Join me on Globetrotter! Click this link to start playing: ${inviteLink}`;
       const encodedMessage = encodeURIComponent(message);
 
       const whatsappUrl = `https://web.whatsapp.com/send?text=${encodedMessage}`;
